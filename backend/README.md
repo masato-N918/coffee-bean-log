@@ -62,7 +62,23 @@ uv run fastapi dev app/main.py
 - ヘルスチェック: http://127.0.0.1:8000/api/health → `{"status":"ok"}`
 - API ドキュメント（Swagger UI）: http://127.0.0.1:8000/docs
 
+## API 一覧
+
+| メソッド | パス | 内容 | 成功時 |
+|------|------|------|------|
+| GET | `/api/health` | ヘルスチェック | 200 |
+| GET | `/api/beans` | 豆の一覧（新しい順） | 200 |
+| POST | `/api/beans` | 豆の登録 | 201 |
+| GET | `/api/beans/{id}` | 豆の詳細 | 200 |
+| PUT | `/api/beans/{id}` | 豆の編集（全項目を送る） | 200 |
+| DELETE | `/api/beans/{id}` | 豆の削除（その豆の抽出記録も削除） | 204 |
+
+- 入力チェックに合わない値は 422、存在しない id は 404 を返す。
+- 焙煎度は、`roast_level`（8段階）だけ送ると `roast_group`（呼び方）が自動で入る。組み合わせが食い違うと 422。
+
 ## テスト・コードチェック
+
+テストは開発用の MySQL に接続して行う（各テストは最後にロールバックするので、データは残らない）。先に MySQL を起動し、`uv run alembic upgrade head` を済ませておく。
 
 ```bash
 uv run pytest                 # テスト
@@ -79,7 +95,8 @@ backend/
 │   ├── config.py        # 設定（.env の DATABASE_URL など）の読み込み
 │   ├── database.py      # DB 接続（engine・セッション・モデルの親クラス Base）
 │   ├── models/          # テーブルの定義（bean.py・brew_record.py、選択肢のコード値は choices.py）
-│   └── routers/         # 機能ごとの API（例: health.py）
+│   ├── schemas/         # API の入力・出力の形と入力チェック（Pydantic）
+│   └── routers/         # 機能ごとの API（health.py・beans.py）
 ├── migrations/          # Alembic のマイグレーション
 │   ├── env.py           # Alembic の設定（.env から接続先を読む）
 │   └── versions/        # マイグレーションファイル
