@@ -6,14 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Bean
-from app.schemas.bean import (
-    BeanCreate,
-    BeanRead,
-    BeanSort,
-    BeanUpdate,
-    RoastGroup,
-    RoastLevel,
-)
+from app.models.choices import RoastGroup, RoastLevel
+from app.schemas.bean import BeanCreate, BeanRead, BeanSort, BeanUpdate
 
 router = APIRouter(prefix="/beans", tags=["beans"])
 

@@ -8,13 +8,8 @@ from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.models.choices import PROCESSES, ROAST_GROUPS, ROAST_LEVEL_TO_GROUP, ROAST_LEVELS
+from app.models.choices import ROAST_LEVEL_TO_GROUP, Process, RoastGroup, RoastLevel
 from app.schemas.common import INPUT_CONFIG, Text100, Text1000
-
-# 選択肢は choices.py のタプルから作る（値を二重に書かない）
-RoastGroup = Literal[*ROAST_GROUPS]
-RoastLevel = Literal[*ROAST_LEVELS]
-Process = Literal[*PROCESSES]
 
 # 豆一覧の並び順（newest: 新しい順 / rating: 評価順）
 BeanSort = Literal["newest", "rating"]

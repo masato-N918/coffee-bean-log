@@ -14,6 +14,7 @@
 import argparse
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from typing import Any
 
 from sqlalchemy import delete, select
 
@@ -21,7 +22,7 @@ from app.database import SessionLocal
 from app.models import Bean, BrewRecord
 
 # 豆。上から順に古い（「新しい順」で下から並ぶ）
-BEANS: list[dict] = [
+BEANS: list[dict[str, Any]] = [
     {
         "name": "ブラジル ショコラ",
         "shop": "〇〇珈琲店",
@@ -155,7 +156,7 @@ BEANS: list[dict] = [
 ]
 
 # 抽出記録（豆の名前で紐づける）
-BREW_RECORDS: dict[str, list[dict]] = {
+BREW_RECORDS: dict[str, list[dict[str, Any]]] = {
     "エチオピア イルガチェフェ": [
         {
             "brewed_on": date(2026, 11, 18),
