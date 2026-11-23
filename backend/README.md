@@ -5,6 +5,7 @@ Python + FastAPI で作るバックエンド API です。パッケージ管理�
 ## 必要なもの
 
 - uv（Python 3.14 は uv が用意します）
+- Docker（ローカルの MySQL 8.4 を動かすため）
 
 ## セットアップ
 
@@ -12,6 +13,35 @@ Python + FastAPI で作るバックエンド API です。パッケージ管理�
 cd backend
 uv sync
 ```
+
+## DB（MySQL）の準備
+
+1. `.env` を2つ作る（どちらも Git には含めない）
+
+   ```bash
+   # リポジトリ直下：docker compose が使う
+   cp .env.example .env
+   # backend：バックエンドが使う
+   cp backend/.env.example backend/.env
+   ```
+
+   - パスワードは自分で決めた値に変える。`backend/.env` の `DATABASE_URL` のパスワードは、リポジトリ直下の `.env` の `MYSQL_PASSWORD` と同じにする
+
+2. MySQL を起動する（リポジトリ直下で実行）
+
+   ```bash
+   docker compose up -d      # 起動（初回はイメージをダウンロード）
+   docker compose ps         # STATUS が healthy になれば準備完了
+   docker compose down       # 停止（データはボリュームに残る）
+   docker compose down -v    # 停止してデータも削除
+   ```
+
+3. マイグレーション（テーブルの作成・変更）は Alembic で行う（`backend` で実行）
+
+   ```bash
+   uv run alembic upgrade head   # 最新の状態までテーブルを作る・変える
+   uv run alembic current        # 今の DB の状態を確認（DB に接続できるかの確認にも使える）
+   ```
 
 ## 起動
 
@@ -36,6 +66,12 @@ uv run ruff format .          # フォーマット
 backend/
 ├── app/
 │   ├── main.py          # FastAPI アプリの生成・ルーターの登録
+│   ├── config.py        # 設定（.env の DATABASE_URL など）の読み込み
+│   ├── database.py      # DB 接続（engine・セッション・モデルの親クラス Base）
 │   └── routers/         # 機能ごとの API（例: health.py）
+├── migrations/          # Alembic のマイグレーション
+│   ├── env.py           # Alembic の設定（.env から接続先を読む）
+│   └── versions/        # マイグレーションファイル
+├── alembic.ini          # Alembic の設定ファイル
 └── tests/               # テスト
 ```
