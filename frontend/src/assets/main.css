@@ -1,7 +1,101 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
+/* ===== レイアウト・共通部品（mock/index.html から移植） ===== */
+.container {
+  max-width: 680px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 16px 48px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 0;
+}
+.topbar h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+a.card:hover {
+  border-color: var(--primary);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover {
+  border-color: var(--primary);
+}
+.btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.muted {
+  color: var(--muted);
+}
+.stars {
+  color: var(--star);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 32px 0;
+}
+.error {
+  color: var(--danger);
+  text-align: center;
+  padding: 32px 0;
+}
+
+/* ===== 豆一覧 ===== */
+.count {
+  margin: 4px 0 8px;
+  color: var(--muted);
+  text-align: right;
+}
+.bean-card .line1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.bean-card .line1 strong {
+  font-size: 17px;
+}
+
+@media (max-width: 480px) {
+  .topbar h1 {
+    font-size: 18px;
+  }
 }
