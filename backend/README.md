@@ -43,6 +43,16 @@ uv sync
    uv run alembic current        # 今の DB の状態を確認（DB に接続できるかの確認にも使える）
    ```
 
+   初回は `upgrade head` で `beans`（豆）と `brew_records`（抽出記録）のテーブルが作られる。
+
+   モデル（`app/models/`）を変えたときは、マイグレーションファイルを自動生成し、中身を確認してから適用する。生成したファイルは ruff で自動的に整形される（`alembic.ini` の `post_write_hooks`）。
+
+   ```bash
+   uv run alembic revision --autogenerate -m "変更内容"   # モデルとDBの差分からファイルを作る
+   uv run alembic upgrade head                             # 適用する
+   uv run alembic downgrade -1                             # 1つ前に戻す
+   ```
+
 ## 起動
 
 ```bash
@@ -68,6 +78,7 @@ backend/
 │   ├── main.py          # FastAPI アプリの生成・ルーターの登録
 │   ├── config.py        # 設定（.env の DATABASE_URL など）の読み込み
 │   ├── database.py      # DB 接続（engine・セッション・モデルの親クラス Base）
+│   ├── models/          # テーブルの定義（bean.py・brew_record.py、選択肢のコード値は choices.py）
 │   └── routers/         # 機能ごとの API（例: health.py）
 ├── migrations/          # Alembic のマイグレーション
 │   ├── env.py           # Alembic の設定（.env から接続先を読む）
