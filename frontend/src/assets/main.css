@@ -138,6 +138,17 @@ summary:focus {
   gap: 12px;
   flex-wrap: wrap;
 }
+/* 並び順は fieldset でまとめる（ブラウザ標準の枠と余白は消し、見出しを横に並べる） */
+.sort {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.sort legend {
+  float: left;
+  padding: 0;
+}
 .sort label {
   margin-left: 10px;
   white-space: nowrap;
@@ -342,22 +353,21 @@ summary:focus {
 }
 
 /* ===== 確認ダイアログ ===== */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(30, 20, 15, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  z-index: 100;
-}
+/* <dialog> は showModal() で開くと画面中央に表示され、::backdrop が背景になる */
 .dialog {
   background: #fff;
+  border: 0;
   border-radius: 12px;
-  padding: 20px;
-  width: 100%;
+  padding: 0;
+  width: calc(100% - 32px);
   max-width: 380px;
+}
+.dialog::backdrop {
+  background: rgba(30, 20, 15, 0.45);
+}
+/* 中身を覆う要素。背景のクリックとダイアログ内のクリックを区別するため、余白はここに付ける */
+.dialog-body {
+  padding: 20px;
 }
 .dialog .title {
   font-weight: 700;

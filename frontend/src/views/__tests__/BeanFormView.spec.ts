@@ -181,12 +181,12 @@ describe('BeanFormView（編集モード）', () => {
     const wrapper = await mountView('5')
 
     await wrapper.find('.actions .btn.danger').trigger('click')
-    const dialog = wrapper.find('[role="dialog"]')
+    const dialog = wrapper.find('dialog')
     expect(dialog.text()).toContain('この豆を削除しますか？')
     expect(dialog.text()).toContain('抽出記録（3件）も一緒に削除されます。')
 
     await dialog.find('.btn:not(.danger)').trigger('click')
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect(wrapper.find('dialog').exists()).toBe(false)
     expect(callsOf('DELETE')).toHaveLength(0)
   })
 
@@ -195,7 +195,7 @@ describe('BeanFormView（編集モード）', () => {
     const wrapper = await mountView('5')
 
     await wrapper.find('.actions .btn.danger').trigger('click')
-    expect(wrapper.find('[role="dialog"]').text()).not.toContain('抽出記録')
+    expect(wrapper.find('dialog').text()).not.toContain('抽出記録')
   })
 
   it('確認ダイアログで［削除］すると DELETE し、一覧へ移る', async () => {
@@ -203,7 +203,7 @@ describe('BeanFormView（編集モード）', () => {
     const wrapper = await mountView('5')
 
     await wrapper.find('.actions .btn.danger').trigger('click')
-    await wrapper.find('[role="dialog"] .btn.danger').trigger('click')
+    await wrapper.find('dialog .btn.danger').trigger('click')
     await flushPromises()
 
     expect(callsOf('DELETE').map(([url]) => url)).toEqual(['/api/beans/5'])
