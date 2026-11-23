@@ -4,6 +4,14 @@ import { buildBeansQuery, createBean, deleteBean, fetchBean, updateBean } from '
 import { NotFoundError } from '../errors'
 import type { BeanInput } from '@/types/bean'
 
+function stubFetch(ok: boolean, status: number, body?: unknown) {
+  const fetchMock = vi
+    .fn<(url: string, init?: RequestInit) => Promise<unknown>>()
+    .mockResolvedValue({ ok, status, json: () => Promise.resolve(body) })
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
+
 describe('buildBeansQuery', () => {
   it('条件がないときは空文字', () => {
     expect(buildBeansQuery()).toBe('')
@@ -32,14 +40,6 @@ describe('buildBeansQuery', () => {
 
 describe('fetchBean', () => {
   afterEach(() => vi.unstubAllGlobals())
-
-  function stubFetch(ok: boolean, status: number, body?: unknown) {
-    const fetchMock = vi
-      .fn<(url: string) => Promise<unknown>>()
-      .mockResolvedValue({ ok, status, json: () => Promise.resolve(body) })
-    vi.stubGlobal('fetch', fetchMock)
-    return fetchMock
-  }
 
   it('豆を1件取得する', async () => {
     const fetchMock = stubFetch(true, 200, { id: 3, name: '豆' })
@@ -73,14 +73,6 @@ describe('createBean / updateBean / deleteBean', () => {
     price: null,
     rating: null,
     memo: null,
-  }
-
-  function stubFetch(ok: boolean, status: number, body?: unknown) {
-    const fetchMock = vi
-      .fn<(url: string, init?: RequestInit) => Promise<unknown>>()
-      .mockResolvedValue({ ok, status, json: () => Promise.resolve(body) })
-    vi.stubGlobal('fetch', fetchMock)
-    return fetchMock
   }
 
   it('createBean は POST で JSON を送り、登録した豆を返す', async () => {

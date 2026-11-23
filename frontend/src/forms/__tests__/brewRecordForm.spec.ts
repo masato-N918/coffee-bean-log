@@ -202,9 +202,7 @@ describe('validateBrewRecordForm', () => {
   })
 
   it('湯温・抽出時間は範囲内の整数でなければエラー', () => {
-    const { errors } = validateBrewRecordForm(
-      validForm({ water_temp_c: 49, brew_time_sec: 1.5 }),
-    )
+    const { errors } = validateBrewRecordForm(validForm({ water_temp_c: 49, brew_time_sec: 1.5 }))
     expect(errors.water_temp_c).toBe('50〜100の整数で入力してください')
     expect(errors.brew_time_sec).toBe('1〜3600の整数で入力してください')
   })

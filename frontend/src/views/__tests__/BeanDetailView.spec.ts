@@ -116,10 +116,10 @@ describe('BeanDetailView', () => {
     )
     const wrapper = await mountView()
 
-    expect(fetchMock.mock.calls.map((c) => c[0]).sort()).toEqual([
-      '/api/beans/1',
-      '/api/beans/1/brew-records',
-    ])
+    // 2つの API は並行して呼ぶので、呼んだ順番は問わない
+    const urls = fetchMock.mock.calls.map((c) => c[0])
+    expect(urls).toHaveLength(2)
+    expect(urls).toEqual(expect.arrayContaining(['/api/beans/1', '/api/beans/1/brew-records']))
     expect(wrapper.find('h2').text()).toBe('エチオピア イルガチェフェ')
     expect(wrapper.find('.detail-head').text()).toContain('★★★★☆')
     expect(infoRows(wrapper)).toEqual({
