@@ -72,9 +72,15 @@ uv run fastapi dev app/main.py
 | GET | `/api/beans/{id}` | 豆の詳細 | 200 |
 | PUT | `/api/beans/{id}` | 豆の編集（全項目を送る） | 200 |
 | DELETE | `/api/beans/{id}` | 豆の削除（その豆の抽出記録も削除） | 204 |
+| GET | `/api/beans/{bean_id}/brew-records` | その豆の抽出記録の一覧（抽出日の新しい順） | 200 |
+| POST | `/api/beans/{bean_id}/brew-records` | 抽出記録の登録 | 201 |
+| GET | `/api/brew-records/{id}` | 抽出記録の取得 | 200 |
+| PUT | `/api/brew-records/{id}` | 抽出記録の編集（全項目を送る） | 200 |
+| DELETE | `/api/brew-records/{id}` | 抽出記録の削除 | 204 |
 
 - 入力チェックに合わない値は 422、存在しない id は 404 を返す。
 - 焙煎度は、`roast_level`（8段階）だけ送ると `roast_group`（呼び方）が自動で入る。組み合わせが食い違うと 422。
+- 抽出記録の豆の量・湯量は、数値と単位をセットで送る（片方だけは 422）。範囲は単位ごとに異なる（豆の量 g: 0.1〜1000 / 杯: 0.5〜20、湯量 ml: 1〜5000 / 杯: 1〜20）。
 
 ### 豆一覧のクエリパラメータ
 
