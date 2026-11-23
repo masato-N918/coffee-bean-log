@@ -194,3 +194,15 @@ def test_create_brew_record_amount_boundaries(
     client: TestClient, bean_id: int, fields: dict[str, Any]
 ) -> None:
     create_record(client, bean_id, **fields)
+
+
+def test_text_is_stripped_and_blank_is_saved_as_null(client: TestClient, bean_id: int) -> None:
+    created = create_record(client, bean_id, equipment=" ハリオ V60 ", taste_memo="   ")
+    assert created["equipment"] == "ハリオ V60"
+    assert created["taste_memo"] is None
+
+    response = client.put(
+        f"/api/brew-records/{created['id']}", json={**MINIMUM_RECORD, "equipment": ""}
+    )
+    assert response.status_code == 200
+    assert response.json()["equipment"] is None

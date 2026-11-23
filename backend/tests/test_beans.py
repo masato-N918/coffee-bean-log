@@ -209,6 +209,7 @@ def test_not_found(client: TestClient, method: str, body: dict[str, Any] | None)
     [
         {},
         {"name": ""},
+        {"name": "   "},
         {"name": "あ" * 101},
         {"name": "豆", "rating": 0},
         {"name": "豆", "rating": 6},
@@ -223,6 +224,19 @@ def test_create_bean_validation_error(client: TestClient, body: dict[str, Any]) 
     response = client.post("/api/beans", json=body)
 
     assert response.status_code == 422
+
+
+def test_text_is_stripped_and_blank_is_saved_as_null(client: TestClient) -> None:
+    created = create_bean(client, name="  豆  ", shop=" 〇〇珈琲店 ", origin="", memo="   ")
+    assert created["name"] == "豆"
+    assert created["shop"] == "〇〇珈琲店"
+    assert created["origin"] is None
+    assert created["memo"] is None
+
+    # 編集でも同じ扱いにする。取り直しても空文字ではなく null で保存されている
+    response = client.put(f"/api/beans/{created['id']}", json={"name": "豆", "shop": "  "})
+    assert response.status_code == 200
+    assert client.get(f"/api/beans/{created['id']}").json()["shop"] is None
 
 
 def test_roast_level_fills_roast_group(client: TestClient) -> None:
