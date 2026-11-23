@@ -30,3 +30,7 @@ target-version = "py314"
 [tool.ruff.lint]
 # E/W: pycodestyle, F: pyflakes, I: import の並び順, UP: 新しい書き方への置き換え, B: バグになりやすい書き方
 select = ["E", "W", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# 自動生成したマイグレーションは、CHECK 制約の SQL などで1行が長くなるため行の長さを見ない
+"migrations/versions/*.py" = ["E501"]

@@ -3,6 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+import app.models  # noqa: F401  モデルを Base.metadata に登録するために読み込む
 from app.config import get_settings
 from app.database import Base
 
@@ -18,7 +19,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # autogenerate（モデルとDBの差分からマイグレーションを自動生成）で比べる対象。
-# モデルを作ったら、ここで import して Base.metadata に登録されるようにする。
+# モデルは上の import app.models で Base.metadata に登録している。
 target_metadata = Base.metadata
 
 
