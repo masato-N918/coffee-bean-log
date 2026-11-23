@@ -62,6 +62,15 @@ uv run fastapi dev app/main.py
 - ヘルスチェック: http://127.0.0.1:8000/api/health → `{"status":"ok"}`
 - API ドキュメント（Swagger UI）: http://127.0.0.1:8000/docs
 
+## テストデータ
+
+画面の確認用に、豆10件と抽出記録6件を入れられる（焙煎度・評価・産地・抽出記録の有無などのパターンをそろえてある）。
+
+```bash
+uv run python -m scripts.seed          # テストデータを追加（同じ名前の豆があれば飛ばす）
+uv run python -m scripts.seed --reset  # 豆と抽出記録をすべて消してから入れ直す
+```
+
 ## API 一覧
 
 | メソッド | パス | 内容 | 成功時 |
@@ -118,6 +127,8 @@ backend/
 ├── migrations/          # Alembic のマイグレーション
 │   ├── env.py           # Alembic の設定（.env から接続先を読む）
 │   └── versions/        # マイグレーションファイル
+├── scripts/
+│   └── seed.py          # 開発用のテストデータを入れる
 ├── alembic.ini          # Alembic の設定ファイル
 └── tests/               # テスト
 ```
