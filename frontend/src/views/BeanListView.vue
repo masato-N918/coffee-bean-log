@@ -59,8 +59,7 @@ const subText = (bean: Bean) => [bean.origin, roastText(bean)].filter(Boolean).j
 <template>
   <header class="topbar">
     <h1>☕ coffee-bean-log</h1>
-    <!-- TODO: 豆フォーム画面（S-3）ができたら RouterLink にする -->
-    <button class="btn primary" type="button" disabled>＋ 豆を登録</button>
+    <RouterLink class="btn primary" :to="{ name: 'bean-new' }">＋ 豆を登録</RouterLink>
   </header>
 
   <section class="card filters">

@@ -24,6 +24,9 @@ export interface Bean {
   updated_at: string
 }
 
+/** 豆の登録・編集（POST / PUT）で送る値 */
+export type BeanInput = Omit<Bean, 'id' | 'created_at' | 'updated_at'>
+
 /** 豆一覧の並び順（newest: 新しい順 / rating: 評価順） */
 export type BeanSort = 'newest' | 'rating'
 

@@ -86,8 +86,9 @@ const rows = computed<[string, string][]>(() => {
 <template>
   <header class="topbar">
     <RouterLink class="link" :to="{ name: 'bean-list' }">← 一覧へ</RouterLink>
-    <!-- TODO: 豆フォーム画面（S-3）ができたら RouterLink にする -->
-    <button v-if="bean" class="btn" type="button" disabled>編集</button>
+    <RouterLink v-if="bean" class="btn" :to="{ name: 'bean-edit', params: { id: bean.id } }">
+      編集
+    </RouterLink>
   </header>
 
   <p v-if="loading" class="empty">読み込み中…</p>

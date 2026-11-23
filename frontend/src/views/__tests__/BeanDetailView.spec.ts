@@ -134,6 +134,8 @@ describe('BeanDetailView', () => {
     })
     // 「← 一覧へ」は豆一覧画面へのリンク
     expect(wrapper.find('a.link').attributes('href')).toBe('/')
+    // ［編集］は豆フォーム画面（編集）へのリンク
+    expect(wrapper.find('.topbar a.btn').attributes('href')).toBe('/beans/1/edit')
   })
 
   it('未入力の項目は表示しない', async () => {

@@ -1,5 +1,5 @@
 import { NotFoundError } from '@/api/errors'
-import type { Bean, BeanListQuery } from '@/types/bean'
+import type { Bean, BeanInput, BeanListQuery } from '@/types/bean'
 
 // 開発時は vite.config.ts のプロキシで /api をバックエンド（FastAPI）に転送する
 const BASE_URL = '/api/beans'
@@ -37,4 +37,30 @@ export async function fetchBean(id: number): Promise<Bean> {
     throw new Error(`豆の情報を取得できませんでした（${res.status}）`)
   }
   return res.json()
+}
+
+/** 豆を登録する。登録した豆（id 付き）を返す */
+export async function createBean(input: BeanInput): Promise<Bean> {
+  const res = await fetch(BASE_URL, jsonRequest('POST', input))
+  if (!res.ok) throw new Error(`豆を保存できませんでした（${res.status}）`)
+  return res.json()
+}
+
+/** 豆を編集する（全項目を置き換える） */
+export async function updateBean(id: number, input: BeanInput): Promise<Bean> {
+  const res = await fetch(`${BASE_URL}/${id}`, jsonRequest('PUT', input))
+  if (res.status === 404) throw new NotFoundError('豆が見つかりません')
+  if (!res.ok) throw new Error(`豆を保存できませんでした（${res.status}）`)
+  return res.json()
+}
+
+/** 豆を削除する（その豆の抽出記録も一緒に削除される） */
+export async function deleteBean(id: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' })
+  if (res.status === 404) throw new NotFoundError('豆が見つかりません')
+  if (!res.ok) throw new Error(`豆を削除できませんでした（${res.status}）`)
+}
+
+function jsonRequest(method: 'POST' | 'PUT', body: unknown): RequestInit {
+  return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }

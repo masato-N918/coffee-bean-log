@@ -102,6 +102,13 @@ describe('BeanListView', () => {
     expect(wrapper.find('.filters').exists()).toBe(true)
   })
 
+  it('［＋ 豆を登録］は豆フォーム画面（新規）へのリンク', async () => {
+    respond([])
+    const wrapper = await mountView()
+
+    expect(wrapper.find('.topbar a.btn').attributes('href')).toBe('/beans/new')
+  })
+
   it('取得に失敗したらエラーを表示する', async () => {
     respond(undefined, false, 500)
     const wrapper = await mountView()
