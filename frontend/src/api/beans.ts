@@ -61,6 +61,6 @@ export async function deleteBean(id: number): Promise<void> {
   if (!res.ok) throw new Error(`豆を削除できませんでした（${res.status}）`)
 }
 
-function jsonRequest(method: 'POST' | 'PUT', body: unknown): RequestInit {
+export function jsonRequest(method: 'POST' | 'PUT', body: unknown): RequestInit {
   return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }

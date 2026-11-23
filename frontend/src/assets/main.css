@@ -266,6 +266,71 @@ summary:focus {
   font-size: 13px;
   margin-left: 8px;
 }
+.sub {
+  color: var(--muted);
+  margin: -8px 0 12px;
+}
+.amount {
+  display: flex;
+  gap: 6px;
+}
+.amount input {
+  flex: 1;
+  min-width: 0;
+}
+.amount select {
+  width: 5.5em;
+  flex: none;
+}
+/* ホット / アイスの切り替えボタン */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.segmented label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  min-height: 42px;
+  padding: 0 16px;
+  cursor: pointer;
+  background: #fff;
+}
+.segmented label + label {
+  border-left: 1px solid var(--line);
+}
+.segmented label.on {
+  background: var(--primary);
+  color: var(--primary-text);
+  font-weight: 600;
+}
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.segmented label:focus-within {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+/* 詳細（任意）の折りたたみ */
+.toggle {
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+}
+.details-box {
+  border-left: 3px solid var(--line);
+  padding-left: 12px;
+  margin: 4px 0 14px;
+}
 .actions {
   display: flex;
   gap: 8px;
