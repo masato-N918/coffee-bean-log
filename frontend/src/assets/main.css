@@ -199,8 +199,62 @@ summary:focus {
   padding-left: 22px;
 }
 
+/* ===== 豆詳細 ===== */
+.link {
+  color: var(--primary);
+  font-weight: 600;
+}
+.detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.detail-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+dl.info {
+  display: grid;
+  grid-template-columns: 6em 1fr;
+  gap: 6px 12px;
+  margin: 12px 0 0;
+}
+dl.info dt {
+  color: var(--muted);
+}
+dl.info dd {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 10px;
+}
+.section-head h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.record-card .memo {
+  margin-top: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.temp-hot {
+  color: #b5532a;
+}
+.temp-ice {
+  color: #2a6fb5;
+}
+
 @media (max-width: 480px) {
   .topbar h1 {
     font-size: 18px;
+  }
+  dl.info {
+    grid-template-columns: 5.5em 1fr;
   }
 }

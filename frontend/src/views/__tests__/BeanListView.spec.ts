@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { createMemoryHistory, createRouter } from 'vue-router'
 
 import BeanListView from '../BeanListView.vue'
+import { routes } from '@/router'
 import type { Bean } from '@/types/bean'
 
 function makeBean(overrides: Partial<Bean>): Bean {
@@ -38,7 +40,9 @@ function lastQuery() {
 }
 
 async function mountView() {
-  const wrapper = mount(BeanListView, { attachTo: document.body })
+  const router = createRouter({ history: createMemoryHistory(), routes })
+  await router.push('/')
+  const wrapper = mount(BeanListView, { attachTo: document.body, global: { plugins: [router] } })
   await flushPromises()
   return wrapper
 }
@@ -83,6 +87,9 @@ describe('BeanListView', () => {
     expect(cards[1]!.text()).toContain('未評価')
     expect(cards[1]!.text()).toContain('中深煎り')
     expect(cards[1]!.text()).not.toContain('／')
+    // カードは豆詳細画面へのリンク
+    expect(cards[0]!.attributes('href')).toBe('/beans/1')
+    expect(cards[1]!.attributes('href')).toBe('/beans/2')
   })
 
   it('条件なしで0件のときは「まだ豆が登録されていません」と表示する', async () => {

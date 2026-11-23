@@ -1,5 +1,13 @@
 // 選択肢のコード値と表示名（docs/データ設計書.md の「4. 選択肢の保存値」）
 import type { Bean, Process, RoastGroup, RoastLevel } from '@/types/bean'
+import type {
+  BrewMethod,
+  BrewRecord,
+  DoseUnit,
+  GrindSize,
+  Temperature,
+  WaterUnit,
+} from '@/types/brewRecord'
 
 interface Choice<T extends string> {
   value: T
@@ -31,6 +39,29 @@ export const PROCESSES: Choice<Process>[] = [
   { value: 'other', label: 'その他' },
 ]
 
+export const BREW_METHODS: Choice<BrewMethod>[] = [
+  { value: 'hand_drip', label: 'ハンドドリップ' },
+  { value: 'machine', label: 'コーヒーマシン' },
+  { value: 'french_press', label: 'フレンチプレス' },
+  { value: 'espresso', label: 'エスプレッソ' },
+  { value: 'other', label: 'その他' },
+]
+
+export const TEMPERATURES: Choice<Temperature>[] = [
+  { value: 'hot', label: 'ホット' },
+  { value: 'ice', label: 'アイス' },
+]
+
+export const GRIND_SIZES: Choice<GrindSize>[] = [
+  { value: 'extra_fine', label: '極細' },
+  { value: 'fine', label: '細' },
+  { value: 'medium_fine', label: '中細' },
+  { value: 'medium', label: '中' },
+  { value: 'coarse', label: '粗' },
+]
+
+export const UNIT_LABELS: Record<DoseUnit | WaterUnit, string> = { g: 'g', ml: 'ml', cup: '杯' }
+
 export function labelOf<T extends string>(choices: Choice<T>[], value: T | null): string {
   return choices.find((c) => c.value === value)?.label ?? ''
 }
@@ -47,4 +78,18 @@ export function roastText(bean: Pick<Bean, 'roast_group' | 'roast_level'>): stri
 /** 呼び方に属する8段階の一覧 */
 export function levelsOf(group: RoastGroup) {
   return ROAST_LEVELS.filter((l) => l.group === group)
+}
+
+/** 抽出記録の量の表示：「豆 15 g ／ 湯 240 ml」。入力のない量は出さない */
+export function amountText(
+  record: Pick<BrewRecord, 'dose_amount' | 'dose_unit' | 'water_amount' | 'water_unit'>,
+): string {
+  const parts: string[] = []
+  if (record.dose_amount != null && record.dose_unit) {
+    parts.push(`豆 ${record.dose_amount} ${UNIT_LABELS[record.dose_unit]}`)
+  }
+  if (record.water_amount != null && record.water_unit) {
+    parts.push(`湯 ${record.water_amount} ${UNIT_LABELS[record.water_unit]}`)
+  }
+  return parts.join(' ／ ')
 }

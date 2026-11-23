@@ -1,3 +1,4 @@
+import { NotFoundError } from '@/api/errors'
 import type { Bean, BeanListQuery } from '@/types/bean'
 
 // 開発時は vite.config.ts のプロキシで /api をバックエンド（FastAPI）に転送する
@@ -24,6 +25,16 @@ export async function fetchBeans(query: BeanListQuery = {}): Promise<Bean[]> {
   const res = await fetch(qs ? `${BASE_URL}?${qs}` : BASE_URL)
   if (!res.ok) {
     throw new Error(`豆の一覧を取得できませんでした（${res.status}）`)
+  }
+  return res.json()
+}
+
+/** 豆を1件取得する。見つからないときは NotFoundError を投げる */
+export async function fetchBean(id: number): Promise<Bean> {
+  const res = await fetch(`${BASE_URL}/${id}`)
+  if (res.status === 404) throw new NotFoundError('豆が見つかりません')
+  if (!res.ok) {
+    throw new Error(`豆の情報を取得できませんでした（${res.status}）`)
   }
   return res.json()
 }

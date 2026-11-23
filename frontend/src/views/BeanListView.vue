@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
 
 import { fetchBeans } from '@/api/beans'
 import RatingStars from '@/components/RatingStars.vue'
@@ -96,13 +97,17 @@ const subText = (bean: Bean) => [bean.origin, roastText(bean)].filter(Boolean).j
   <template v-else>
     <p class="count">{{ beans.length }}件</p>
     <p v-if="beans.length === 0" class="empty">条件に合う豆がありません</p>
-    <!-- TODO: 豆詳細画面（S-2）ができたら RouterLink にする -->
-    <div v-for="bean in beans" :key="bean.id" class="card bean-card">
+    <RouterLink
+      v-for="bean in beans"
+      :key="bean.id"
+      class="card bean-card"
+      :to="{ name: 'bean-detail', params: { id: bean.id } }"
+    >
       <div class="line1">
         <strong>{{ bean.name }}</strong>
         <RatingStars :rating="bean.rating" />
       </div>
       <div class="muted">{{ subText(bean) }}</div>
-    </div>
+    </RouterLink>
   </template>
 </template>
