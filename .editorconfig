@@ -1,0 +1,28 @@
+# エディタの設定をそろえる（https://editorconfig.org）
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# フロントエンド（Prettier の printWidth と同じ 100 文字）
+[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl,html}]
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# バックエンド（pyproject.toml の ruff の line-length と同じ 100 文字）
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+[*.{json,yml,yaml,toml}]
+indent_style = space
+indent_size = 2
+
+# Markdown は行末の空白2つが改行の意味になるので消さない
+[*.md]
+trim_trailing_whitespace = false

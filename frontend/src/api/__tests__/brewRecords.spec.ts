@@ -91,7 +91,9 @@ describe('createBrewRecord', () => {
 
   it('それ以外のエラーはステータス付きのメッセージで投げる', async () => {
     stubFetch(false, 422)
-    await expect(createBrewRecord(3, input)).rejects.toThrow('抽出記録を保存できませんでした（422）')
+    await expect(createBrewRecord(3, input)).rejects.toThrow(
+      '抽出記録を保存できませんでした（422）',
+    )
   })
 })
 
@@ -112,7 +114,9 @@ describe('updateBrewRecord', () => {
 
   it('それ以外のエラーはステータス付きのメッセージで投げる', async () => {
     stubFetch(false, 500)
-    await expect(updateBrewRecord(7, input)).rejects.toThrow('抽出記録を保存できませんでした（500）')
+    await expect(updateBrewRecord(7, input)).rejects.toThrow(
+      '抽出記録を保存できませんでした（500）',
+    )
   })
 })
 

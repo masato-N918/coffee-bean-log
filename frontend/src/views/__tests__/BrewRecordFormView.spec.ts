@@ -220,7 +220,10 @@ describe('BrewRecordFormView（新規モード）', () => {
 })
 
 describe('BrewRecordFormView（編集モード）', () => {
-  function respondRecord(record: BrewRecord = makeRecord(), extra: Record<string, FakeResponse> = {}) {
+  function respondRecord(
+    record: BrewRecord = makeRecord(),
+    extra: Record<string, FakeResponse> = {},
+  ) {
     respond({
       'GET /api/beans/5': ok(makeBean()),
       [`GET /api/brew-records/${record.id}`]: ok(record),
