@@ -1,0 +1,27 @@
+[project]
+name = "coffee-bean-log-backend"
+version = "0.1.0"
+description = "coffee-bean-log のバックエンド API（FastAPI）"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.165.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: import の並び順, UP: 新しい書き方への置き換え, B: バグになりやすい書き方
+select = ["E", "W", "F", "I", "UP", "B"]
