@@ -123,7 +123,7 @@ backend/
 │   ├── database.py      # DB 接続（engine・セッション・モデルの親クラス Base）
 │   ├── models/          # テーブルの定義（bean.py・brew_record.py、選択肢のコード値は choices.py）
 │   ├── schemas/         # API の入力・出力の形と入力チェック（Pydantic）
-│   └── routers/         # 機能ごとの API（health.py・beans.py）
+│   └── routers/         # 機能ごとの API（health.py・beans.py・brew_records.py）
 ├── migrations/          # Alembic のマイグレーション
 │   ├── env.py           # Alembic の設定（.env から接続先を読む）
 │   └── versions/        # マイグレーションファイル
