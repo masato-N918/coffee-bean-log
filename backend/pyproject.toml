@@ -15,6 +15,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=2.4.1",
     "pytest>=9.2.0",
     "ruff>=0.17.6",
 ]
@@ -22,6 +23,13 @@ dev = [
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.mypy]
+# 型チェック。実行: uv run mypy（files を見るので引数は不要）
+strict = true
+files = ["app", "tests", "scripts", "migrations"]
+# Pydantic のモデルの __init__ の引数などを正しく型チェックするためのプラグイン
+plugins = ["pydantic.mypy"]
 
 [tool.ruff]
 line-length = 100

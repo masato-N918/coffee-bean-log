@@ -25,7 +25,8 @@ FULL_BEAN: dict[str, Any] = {
 def create_bean(client: TestClient, **fields: Any) -> dict[str, Any]:
     response = client.post("/api/beans", json={"name": "テスト豆", **fields})
     assert response.status_code == 201, response.text
-    return response.json()
+    bean: dict[str, Any] = response.json()
+    return bean
 
 
 def test_create_and_get_bean(client: TestClient) -> None:

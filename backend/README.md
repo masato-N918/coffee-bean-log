@@ -111,6 +111,7 @@ uv run python -m scripts.seed --reset  # 豆と抽出記録をすべて消して
 uv run pytest                 # テスト
 uv run ruff check .           # リント
 uv run ruff format .          # フォーマット
+uv run mypy                   # 型チェック（対象と設定は pyproject.toml の [tool.mypy]）
 ```
 
 ## ディレクトリ構成

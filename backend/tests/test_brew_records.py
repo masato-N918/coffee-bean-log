@@ -25,13 +25,15 @@ MINIMUM_RECORD: dict[str, Any] = {"brewed_on": "2026-11-20", "method": "machine"
 def bean_id(client: TestClient) -> int:
     response = client.post("/api/beans", json={"name": "テスト豆"})
     assert response.status_code == 201, response.text
-    return response.json()["id"]
+    bean_id: int = response.json()["id"]
+    return bean_id
 
 
 def create_record(client: TestClient, bean_id: int, **fields: Any) -> dict[str, Any]:
     response = client.post(f"/api/beans/{bean_id}/brew-records", json={**MINIMUM_RECORD, **fields})
     assert response.status_code == 201, response.text
-    return response.json()
+    record: dict[str, Any] = response.json()
+    return record
 
 
 def test_create_and_get_brew_record(client: TestClient, bean_id: int) -> None:

@@ -5,19 +5,12 @@
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Annotated, Literal, Self
+from typing import Annotated, Self
 
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
-from app.models.choices import BREW_METHODS, DOSE_UNITS, GRIND_SIZES, TEMPERATURES, WATER_UNITS
+from app.models.choices import BrewMethod, DoseUnit, GrindSize, Temperature, WaterUnit
 from app.schemas.common import INPUT_CONFIG, Text100, Text1000
-
-# 選択肢は choices.py のタプルから作る（値を二重に書かない）
-BrewMethod = Literal[*BREW_METHODS]
-Temperature = Literal[*TEMPERATURES]
-GrindSize = Literal[*GRIND_SIZES]
-DoseUnit = Literal[*DOSE_UNITS]
-WaterUnit = Literal[*WATER_UNITS]
 
 # 量（DB は DECIMAL(5,1)）。小数第1位まで受け付け、JSON では文字列ではなく数値で返す
 Amount = Annotated[
