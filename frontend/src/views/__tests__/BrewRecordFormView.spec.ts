@@ -283,11 +283,11 @@ describe('BrewRecordFormView（編集モード）', () => {
     const wrapper = await mountView('5', '8')
 
     await wrapper.find('.actions .btn.danger').trigger('click')
-    const dialog = wrapper.find('[role="dialog"]')
+    const dialog = wrapper.find('dialog')
     expect(dialog.text()).toContain('この抽出記録を削除しますか？')
 
     await dialog.find('.btn:not(.danger)').trigger('click')
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect(wrapper.find('dialog').exists()).toBe(false)
     expect(callsOf('DELETE')).toHaveLength(0)
   })
 
@@ -296,7 +296,7 @@ describe('BrewRecordFormView（編集モード）', () => {
     const wrapper = await mountView('5', '8')
 
     await wrapper.find('.actions .btn.danger').trigger('click')
-    await wrapper.find('[role="dialog"] .btn.danger').trigger('click')
+    await wrapper.find('dialog .btn.danger').trigger('click')
     await flushPromises()
 
     expect(callsOf('DELETE').map(([url]) => url)).toEqual(['/api/brew-records/8'])

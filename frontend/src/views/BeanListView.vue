@@ -81,11 +81,11 @@ const subText = (bean: Bean) => [bean.origin, roastText(bean)].filter(Boolean).j
       </label>
     </div>
     <div class="between" style="margin-top: 12px">
-      <div class="sort">
-        並び順
+      <fieldset class="sort">
+        <legend>並び順</legend>
         <label><input v-model="store.sort" type="radio" value="newest" /> 新しい順</label>
         <label><input v-model="store.sort" type="radio" value="rating" /> 評価順</label>
-      </div>
+      </fieldset>
       <button class="btn" type="button" @click="store.clearFilters()">クリア</button>
     </div>
   </section>
