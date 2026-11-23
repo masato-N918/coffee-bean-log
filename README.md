@@ -28,6 +28,18 @@ uv run fastapi dev app/main.py
 
 http://127.0.0.1:8000/api/health で `{"status":"ok"}` が返れば起動できています。詳しくは [backend/README.md](backend/README.md) を参照してください。
 
+### フロントエンド
+
+Node.js 26 LTS が必要です。
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+http://localhost:5173 で画面が開きます。`/api` はバックエンドに転送されます。詳しくは [frontend/README.md](frontend/README.md) を参照してください。
+
 ## 開発ワークフロー
 
 `main` への直接コミットは禁止です。変更は **Issue を立て → ブランチを切り → PR 経由でマージ** します。
