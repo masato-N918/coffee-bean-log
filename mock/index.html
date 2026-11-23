@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>coffee-bean-log 画面モック</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  :root {
+    --bg: #f7f3ee;
+    --card: #ffffff;
+    --text: #2b211b;
+    --muted: #7a6a5e;
+    --line: #e4dbd2;
+    --primary: #6f4e37;
+    --primary-text: #ffffff;
+    --danger: #b3261e;
+    --star: #d89b2b;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  .mock-banner {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center;
+    background: #3a2e26; color: #f3e9df; font-size: 13px; padding: 6px 12px;
+  }
+  .mock-banner button {
+    font: inherit; font-size: 12px; padding: 2px 10px; border-radius: 6px;
+    border: 1px solid #8a7a6e; background: transparent; color: inherit; cursor: pointer;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 0 16px 48px; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 0;
+  }
+  .topbar h1 { font-size: 20px; margin: 0; }
+  .sub { color: var(--muted); margin: -8px 0 12px; }
+
+  .card {
+    display: block; background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px;
+  }
+  a.card:hover { border-color: var(--primary); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 40px; padding: 0 16px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    font: inherit; font-size: 15px; cursor: pointer; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--primary); }
+  .btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-text); }
+  .btn.danger { color: var(--danger); border-color: var(--danger); }
+  .btn.danger.solid { background: var(--danger); color: #fff; }
+  .link { color: var(--primary); font-weight: 600; }
+
+  .muted { color: var(--muted); }
+  .stars { color: var(--star); letter-spacing: 1px; white-space: nowrap; }
+  .empty { text-align: center; color: var(--muted); padding: 32px 0; }
+
+  /* 一覧 */
+  .filters .row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .filters .row > * { flex: 1 1 200px; }
+  .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .sort label { margin-left: 10px; white-space: nowrap; }
+  .count { margin: 4px 0 8px; color: var(--muted); text-align: right; }
+  .bean-card .line1, .detail-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  }
+  .bean-card .line1 strong { font-size: 17px; }
+
+  /* 焙煎度の複数選択 */
+  .multi { position: relative; }
+  .multi summary {
+    list-style: none; cursor: pointer; border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 32px 8px 10px; background: #fff; min-height: 42px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: relative;
+  }
+  .multi summary::-webkit-details-marker { display: none; }
+  .multi summary::after { content: "▼"; position: absolute; right: 10px; font-size: 11px; color: var(--muted); top: 12px; }
+  .multi-panel {
+    position: absolute; z-index: 10; top: calc(100% + 4px); left: 0; right: 0; min-width: 240px;
+    background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.12); max-height: 60vh; overflow: auto;
+  }
+  .multi-group { padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .multi-group:last-child { border-bottom: 0; }
+  .multi-group label { display: block; cursor: pointer; }
+  .multi-group .lvl { padding-left: 22px; }
+
+  /* 詳細 */
+  .detail-head h2 { margin: 0; font-size: 20px; }
+  dl.info { display: grid; grid-template-columns: 6em 1fr; gap: 6px 12px; margin: 12px 0 0; }
+  dl.info dt { color: var(--muted); }
+  dl.info dd { margin: 0; white-space: pre-wrap; word-break: break-word; }
+  .section-head { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; }
+  .section-head h3 { margin: 0; font-size: 17px; }
+  .record-card .memo { margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
+
+  /* フォーム */
+  .form .field { display: block; margin-bottom: 14px; }
+  .field > span { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .req { color: var(--danger); font-style: normal; margin-left: 2px; }
+  input[type=text], input[type=number], input[type=date], select, textarea {
+    width: 100%; font: inherit; padding: 8px 10px; min-height: 42px;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--text);
+  }
+  textarea { min-height: 80px; resize: vertical; }
+  input:focus, select:focus, textarea:focus, summary:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+  .has-error input, .has-error select, .has-error textarea { border-color: var(--danger); }
+  .err { display: block; color: var(--danger); font-size: 13px; margin-top: 4px; }
+  .form-error { color: var(--danger); margin: 0 0 10px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .amount { display: flex; gap: 6px; }
+  .amount input { flex: 1; min-width: 0; }
+  .amount select { width: 5.5em; flex: none; }
+  .rating { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+  .star {
+    font-size: 28px; line-height: 1; background: none; border: 0; padding: 2px;
+    color: #c9bdb2; cursor: pointer;
+  }
+  .star.on { color: var(--star); }
+  .rating .hint { font-size: 13px; margin-left: 8px; }
+  .segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .segmented label {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 96px; min-height: 42px; padding: 0 16px; cursor: pointer; background: #fff;
+  }
+  .segmented label + label { border-left: 1px solid var(--line); }
+  .segmented label.on { background: var(--primary); color: var(--primary-text); font-weight: 600; }
+  .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+  .segmented label:focus-within { outline: 2px solid var(--primary); outline-offset: -2px; }
+  .temp-hot { color: #b5532a; }
+  .temp-ice { color: #2a6fb5; }
+  .toggle {
+    background: none; border: 0; padding: 6px 0; font: inherit; font-weight: 600;
+    color: var(--primary); cursor: pointer;
+  }
+  .details-box { border-left: 3px solid var(--line); padding-left: 12px; margin: 4px 0 14px; }
+  .actions { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .spacer { flex: 1; }
+
+  /* ダイアログ */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(30, 20, 15, .45);
+    display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 100;
+  }
+  .dialog { background: #fff; border-radius: 12px; padding: 20px; width: 100%; max-width: 380px; }
+  .dialog .title { font-weight: 700; font-size: 17px; margin: 0 0 6px; }
+  .dialog p { margin: 0 0 8px; }
+  .dialog .actions { justify-content: flex-end; margin-top: 16px; }
+
+  @media (max-width: 480px) {
+    .topbar h1 { font-size: 18px; }
+    .two { grid-template-columns: 1fr; }
+    dl.info { grid-template-columns: 5.5em 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const { createApp, reactive, computed, ref, onMounted, onUnmounted } = Vue;
+
+// ===== 選択肢（データ設計書「4. 選択肢の保存値」） =====
+const ROAST_GROUPS = [
+  { value: 'light', label: '浅煎り' },
+  { value: 'medium', label: '中煎り' },
+  { value: 'medium_dark', label: '中深煎り' },
+  { value: 'dark', label: '深煎り' },
+];
+const ROAST_LEVELS = [
+  { value: 'light', label: 'ライト', group: 'light' },
+  { value: 'cinnamon', label: 'シナモン', group: 'light' },
+  { value: 'medium', label: 'ミディアム', group: 'medium' },
+  { value: 'high', label: 'ハイ', group: 'medium' },
+  { value: 'city', label: 'シティ', group: 'medium_dark' },
+  { value: 'full_city', label: 'フルシティ', group: 'medium_dark' },
+  { value: 'french', label: 'フレンチ', group: 'dark' },
+  { value: 'italian', label: 'イタリアン', group: 'dark' },
+];
+const PROCESSES = [
+  { value: 'washed', label: 'ウォッシュト' },
+  { value: 'natural', label: 'ナチュラル' },
+  { value: 'honey', label: 'ハニー' },
+  { value: 'other', label: 'その他' },
+];
+const METHODS = [
+  { value: 'hand_drip', label: 'ハンドドリップ' },
+  { value: 'machine', label: 'コーヒーマシン' },
+  { value: 'french_press', label: 'フレンチプレス' },
+  { value: 'espresso', label: 'エスプレッソ' },
+  { value: 'other', label: 'その他' },
+];
+const TEMPERATURES = [
+  { value: 'hot', label: 'ホット' },
+  { value: 'ice', label: 'アイス' },
+];
+const GRINDS = [
+  { value: 'extra_fine', label: '極細' },
+  { value: 'fine', label: '細' },
+  { value: 'medium_fine', label: '中細' },
+  { value: 'medium', label: '中' },
+  { value: 'coarse', label: '粗' },
+];
+const UNIT_LABELS = { g: 'g', ml: 'ml', cup: '杯' };
+
+const labelOf = (list, value) => (list.find(x => x.value === value) || {}).label || '';
+const levelsOf = group => ROAST_LEVELS.filter(l => l.group === group);
+const stars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+// 焙煎度の表示：「シティ（中深煎り）」／呼び方だけなら「中深煎り」
+function roastText(bean) {
+  if (bean.roast_level) return labelOf(ROAST_LEVELS, bean.roast_level) + '（' + labelOf(ROAST_GROUPS, bean.roast_group) + '）';
+  if (bean.roast_group) return labelOf(ROAST_GROUPS, bean.roast_group);
+  return '';
+}
+const fmtNum = n => String(Number(n));
+function amountText(r) {
+  const parts = [];
+  if (r.dose_amount != null) parts.push('豆 ' + fmtNum(r.dose_amount) + ' ' + UNIT_LABELS[r.dose_unit]);
+  if (r.water_amount != null) parts.push('湯 ' + fmtNum(r.water_amount) + ' ' + UNIT_LABELS[r.water_unit]);
+  return parts.join(' ／ ');
+}
+function today() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
+// ===== サンプルデータ（メモリ上のみ。リロードで初期状態に戻る） =====
+function sampleData() {
+  const beans = [
+    { id: 1, name: 'エチオピア イルガチェフェ', shop: '〇〇珈琲店', origin: 'エチオピア イルガチェフェ', roast_group: 'medium_dark', roast_level: 'city', process: 'washed', purchased_on: '2026-11-18', weight_g: 200, price: 1500, rating: 4, memo: '店員さんのおすすめ', created_at: 5 },
+    { id: 2, name: 'パイクプレイス ロースト', shop: 'スーパー', origin: 'ラテンアメリカ', roast_group: 'medium_dark', roast_level: null, process: null, purchased_on: '2026-11-15', weight_g: 250, price: 1200, rating: null, memo: '', created_at: 4 },
+    { id: 3, name: 'グアテマラ アンティグア', shop: '△△ロースタリー', origin: 'グアテマラ', roast_group: 'medium', roast_level: 'high', process: 'washed', purchased_on: '2026-11-02', weight_g: 200, price: 1300, rating: 5, memo: 'チョコレートのような甘さ', created_at: 3 },
+    { id: 4, name: 'ブラジル ショコラ', shop: '〇〇珈琲店', origin: 'ブラジル', roast_group: 'dark', roast_level: 'french', process: 'natural', purchased_on: '2026-10-20', weight_g: 200, price: 1100, rating: 3, memo: '', created_at: 2 },
+    { id: 5, name: 'ケニア ニエリ', shop: '', origin: 'ケニア ニエリ', roast_group: 'light', roast_level: null, process: null, purchased_on: null, weight_g: null, price: null, rating: 2, memo: '', created_at: 1 },
+  ];
+  const records = [
+    { id: 1, bean_id: 1, brewed_on: '2026-11-20', method: 'hand_drip', temperature: 'hot', dose_amount: 15, dose_unit: 'g', water_amount: 240, water_unit: 'ml', equipment: 'ハリオ V60', grind_size: 'medium_fine', water_temp_c: 90, brew_time_sec: 180, taste_memo: '酸味が明るく、後味がすっきり', created_at: 3 },
+    { id: 2, bean_id: 1, brewed_on: '2026-11-19', method: 'machine', temperature: 'hot', dose_amount: 2, dose_unit: 'cup', water_amount: 2, water_unit: 'cup', equipment: '', grind_size: null, water_temp_c: null, brew_time_sec: null, taste_memo: '', created_at: 2 },
+    { id: 3, bean_id: 1, brewed_on: '2026-11-18', method: 'french_press', temperature: 'hot', dose_amount: 18, dose_unit: 'g', water_amount: 300, water_unit: 'ml', equipment: '', grind_size: 'coarse', water_temp_c: 94, brew_time_sec: 240, taste_memo: 'コクが出て、少し重め', created_at: 1 },
+    { id: 4, bean_id: 3, brewed_on: '2026-11-10', method: 'machine', temperature: 'ice', dose_amount: 3, dose_unit: 'cup', water_amount: null, water_unit: null, equipment: '〇〇社 全自動マシン', grind_size: null, water_temp_c: null, brew_time_sec: null, taste_memo: '甘い香り', created_at: 4 },
+  ];
+  return { beans, records };
+}
+
+const store = reactive({
+  beans: [],
+  records: [],
+  seq: 100,
+  filter: { origin: '', roasts: [], minRating: '' },
+  sort: 'new',
+});
+function resetData(empty) {
+  const d = empty ? { beans: [], records: [] } : sampleData();
+  store.beans = d.beans;
+  store.records = d.records;
+  store.filter = { origin: '', roasts: [], minRating: '' };
+  store.sort = 'new';
+}
+resetData(false);
+const nextId = () => ++store.seq;
+const findBean = id => store.beans.find(b => b.id === id);
+const recordsOf = beanId => store.records
+  .filter(r => r.bean_id === beanId)
+  .sort((a, b) => (b.brewed_on.localeCompare(a.brewed_on)) || (b.created_at - a.created_at));
+const go = hash => { location.replace(hash); };
+
+// ===== 入力チェック =====
+const isBlank = v => v === '' || v == null;
+function checkLength(errors, key, value, max) {
+  if ((value || '').length > max) errors[key] = max + '文字以内で入力してください';
+}
+function checkInt(errors, key, value, min, max) {
+  if (isBlank(value)) return null;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < min || n > max) {
+    errors[key] = min + '〜' + max + 'の整数で入力してください';
+    return null;
+  }
+  return n;
+}
+function checkDecimal(errors, key, value, min, max) {
+  if (isBlank(value)) return null;
+  const n = Number(value);
+  const oneDecimal = Math.abs(n * 10 - Math.round(n * 10)) < 1e-9;
+  if (Number.isNaN(n) || n < min || n > max || !oneDecimal) {
+    errors[key] = min + '〜' + max + 'の数値（小数点以下1桁まで）で入力してください';
+    return null;
+  }
+  return n;
+}
+
+// ===== 部品 =====
+const StarRating = {
+  props: ['modelValue'],
+  emits: ['update:modelValue'],
+  template: `
+    <div class="rating">
+      <button v-for="n in 5" :key="n" type="button" class="star" :class="{ on: modelValue >= n }"
+        :aria-label="'評価 ' + n"
+        @click="$emit('update:modelValue', modelValue === n ? null : n)">{{ modelValue >= n ? '★' : '☆' }}</button>
+      <span class="hint muted">{{ modelValue ? '同じ★をもう一度押すと未評価に戻ります' : '未評価（飲んでからでも付けられます）' }}</span>
+    </div>`,
+};
+
+const ConfirmDialog = {
+  props: ['title', 'message'],
+  emits: ['cancel', 'ok'],
+  template: `
+    <div class="overlay" @click.self="$emit('cancel')">
+      <div class="dialog" role="dialog" aria-modal="true">
+        <p class="title">{{ title }}</p>
+        <p v-if="message">{{ message }}</p>
+        <div class="actions">
+          <button class="btn" type="button" @click="$emit('cancel')">キャンセル</button>
+          <button class="btn danger solid" type="button" @click="$emit('ok')">削除</button>
+        </div>
+      </div>
+    </div>`,
+};
+
+// ===== S-1 豆一覧画面 =====
+const BeanList = {
+  setup() {
+    const f = store.filter;
+    const multi = ref(null);
+    const closeOnOutside = e => { if (multi.value && !multi.value.contains(e.target)) multi.value.open = false; };
+    onMounted(() => document.addEventListener('click', closeOnOutside));
+    onUnmounted(() => document.removeEventListener('click', closeOnOutside));
+
+    const filtered = computed(() => {
+      const keyword = f.origin.trim().toLowerCase();
+      const list = store.beans.filter(b => {
+        if (keyword && !(b.origin || '').toLowerCase().includes(keyword)) return false;
+        if (f.roasts.length) {
+          const hit = f.roasts.some(r => r.startsWith('g:') ? b.roast_group === r.slice(2) : b.roast_level === r.slice(2));
+          if (!hit) return false;
+        }
+        if (f.minRating && !(b.rating && b.rating >= Number(f.minRating))) return false;
+        return true;
+      });
+      return list.slice().sort((a, b) => {
+        if (store.sort === 'rating') {
+          const ra = a.rating || 0, rb = b.rating || 0;
+          if (ra !== rb) return rb - ra;
+        }
+        return b.created_at - a.created_at;
+      });
+    });
+    const roastSummary = computed(() => f.roasts.length
+      ? f.roasts.map(r => r.startsWith('g:') ? labelOf(ROAST_GROUPS, r.slice(2)) : labelOf(ROAST_LEVELS, r.slice(2))).join(', ')
+      : '指定なし');
+    const clear = () => { f.origin = ''; f.roasts = []; f.minRating = ''; };
+    return { store, f, multi, filtered, roastSummary, clear, ROAST_GROUPS, levelsOf, roastText, stars };
+  },
+  template: `
+    <header class="topbar">
+      <h1>☕ coffee-bean-log</h1>
+      <a class="btn primary" href="#/beans/new">＋ 豆を登録</a>
+    </header>
+
+    <section class="card filters">
+      <label class="field"><span>産地</span>
+        <input type="text" v-model="f.origin" placeholder="例: エチオピア">
+      </label>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><span>焙煎度</span>
+          <details class="multi" ref="multi">
+            <summary>{{ roastSummary }}</summary>
+            <div class="multi-panel">
+              <div class="multi-group" v-for="g in ROAST_GROUPS" :key="g.value">
+                <label><input type="checkbox" :value="'g:' + g.value" v-model="f.roasts"> {{ g.label }}（すべて）</label>
+                <label class="lvl" v-for="l in levelsOf(g.value)" :key="l.value">
+                  <input type="checkbox" :value="'l:' + l.value" v-model="f.roasts"> {{ l.label }}
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+        <label class="field"><span>評価</span>
+          <select v-model="f.minRating">
+            <option value="">指定なし</option>
+            <option v-for="n in 5" :key="n" :value="n">★{{ n }} 以上</option>
+          </select>
+        </label>
+      </div>
+      <div class="between" style="margin-top:12px">
+        <div class="sort">並び順
+          <label><input type="radio" value="new" v-model="store.sort"> 新しい順</label>
+          <label><input type="radio" value="rating" v-model="store.sort"> 評価順</label>
+        </div>
+        <button class="btn" type="button" @click="clear">クリア</button>
+      </div>
+    </section>
+
+    <template v-if="store.beans.length === 0">
+      <p class="empty">まだ豆が登録されていません</p>
+    </template>
+    <template v-else>
+      <p class="count">{{ filtered.length }}件</p>
+      <p v-if="filtered.length === 0" class="empty">条件に合う豆がありません</p>
+      <a v-for="b in filtered" :key="b.id" class="card bean-card" :href="'#/beans/' + b.id">
+        <div class="line1">
+          <strong>{{ b.name }}</strong>
+          <span v-if="b.rating" class="stars">{{ stars(b.rating) }}</span>
+          <span v-else class="muted">未評価</span>
+        </div>
+        <div class="muted">{{ [b.origin, roastText(b)].filter(Boolean).join(' ／ ') }}</div>
+      </a>
+    </template>`,
+};
+
+// ===== S-2 豆詳細画面 =====
+const BeanDetail = {
+  props: ['beanId'],
+  setup(props) {
+    const bean = computed(() => findBean(props.beanId));
+    const records = computed(() => recordsOf(props.beanId));
+    const rows = computed(() => {
+      const b = bean.value;
+      if (!b) return [];
+      return [
+        ['購入店', b.shop],
+        ['産地', b.origin],
+        ['焙煎度', roastText(b)],
+        ['精製方法', labelOf(PROCESSES, b.process)],
+        ['購入日', b.purchased_on],
+        ['内容量', b.weight_g != null ? b.weight_g + ' g' : ''],
+        ['価格', b.price != null ? b.price.toLocaleString() + ' 円' : ''],
+        ['メモ', b.memo],
+      ].filter(r => !isBlank(r[1]));
+    });
+    return { bean, records, rows, stars, amountText, labelOf, METHODS, TEMPERATURES };
+  },
+  template: `
+    <template v-if="bean">
+      <header class="topbar">
+        <a class="link" href="#/">← 一覧へ</a>
+        <a class="btn" :href="'#/beans/' + bean.id + '/edit'">編集</a>
+      </header>
+      <section class="card">
+        <div class="detail-head">
+          <h2>{{ bean.name }}</h2>
+          <span v-if="bean.rating" class="stars">{{ stars(bean.rating) }}</span>
+          <span v-else class="muted">未評価</span>
+        </div>
+        <dl class="info" v-if="rows.length">
+          <template v-for="r in rows" :key="r[0]"><dt>{{ r[0] }}</dt><dd>{{ r[1] }}</dd></template>
+        </dl>
+      </section>
+
+      <div class="section-head">
+        <h3>抽出記録（{{ records.length }}件）</h3>
+        <a class="btn primary" :href="'#/beans/' + bean.id + '/records/new'">＋ 記録を追加</a>
+      </div>
+      <p v-if="records.length === 0" class="empty">まだ記録がありません</p>
+      <a v-for="r in records" :key="r.id" class="card record-card" :href="'#/beans/' + bean.id + '/records/' + r.id + '/edit'">
+        <div><strong>{{ r.brewed_on }}</strong>　{{ labelOf(METHODS, r.method) }}・<span :class="'temp-' + r.temperature">{{ labelOf(TEMPERATURES, r.temperature) }}</span></div>
+        <div v-if="amountText(r)" class="muted">{{ amountText(r) }}</div>
+        <div v-if="r.taste_memo" class="memo">{{ r.taste_memo }}</div>
+      </a>
+    </template>
+    <template v-else>
+      <header class="topbar"><a class="link" href="#/">← 一覧へ</a></header>
+      <p class="empty">豆が見つかりません</p>
+    </template>`,
+};
+
+// ===== S-3 豆フォーム画面 =====
+const BeanForm = {
+  props: ['beanId'],
+  components: { StarRating, ConfirmDialog },
+  setup(props) {
+    const isEdit = props.beanId != null;
+    const src = isEdit ? findBean(props.beanId) : null;
+    const form = reactive({
+      name: src ? src.name : '',
+      shop: src ? src.shop || '' : '',
+      origin: src ? src.origin || '' : '',
+      roast: src ? (src.roast_level ? 'l:' + src.roast_level : src.roast_group ? 'g:' + src.roast_group : '') : '',
+      process: src ? src.process || '' : '',
+      purchased_on: src ? src.purchased_on || '' : '',
+      weight_g: src && src.weight_g != null ? String(src.weight_g) : '',
+      price: src && src.price != null ? String(src.price) : '',
+      rating: src ? src.rating : null,
+      memo: src ? src.memo || '' : '',
+    });
+    const errors = reactive({});
+    const submitted = ref(false);
+    const confirming = ref(false);
+    const recordCount = isEdit ? recordsOf(props.beanId).length : 0;
+    const cancelHref = isEdit ? '#/beans/' + props.beanId : '#/';
+
+    function save() {
+      submitted.value = true;
+      Object.keys(errors).forEach(k => delete errors[k]);
+      if (!form.name.trim()) errors.name = '豆の名前を入力してください';
+      checkLength(errors, 'name', form.name, 100);
+      checkLength(errors, 'shop', form.shop, 100);
+      checkLength(errors, 'origin', form.origin, 100);
+      checkLength(errors, 'memo', form.memo, 1000);
+      const weight = checkInt(errors, 'weight_g', form.weight_g, 1, 10000);
+      const price = checkInt(errors, 'price', form.price, 0, 1000000);
+      if (Object.keys(errors).length) return;
+
+      let roast_group = null, roast_level = null;
+      if (form.roast.startsWith('l:')) {
+        roast_level = form.roast.slice(2);
+        roast_group = ROAST_LEVELS.find(l => l.value === roast_level).group;
+      } else if (form.roast.startsWith('g:')) {
+        roast_group = form.roast.slice(2);
+      }
+      const data = {
+        name: form.name.trim(), shop: form.shop.trim(), origin: form.origin.trim(),
+        roast_group, roast_level, process: form.process || null,
+        purchased_on: form.purchased_on || null, weight_g: weight, price,
+        rating: form.rating, memo: form.memo,
+      };
+      if (isEdit) {
+        Object.assign(src, data);
+        go('#/beans/' + src.id);
+      } else {
+        const id = nextId();
+        store.beans.push({ id, created_at: Date.now(), ...data });
+        go('#/beans/' + id);
+      }
+    }
+    function remove() {
+      store.records = store.records.filter(r => r.bean_id !== props.beanId);
+      store.beans = store.beans.filter(b => b.id !== props.beanId);
+      go('#/');
+    }
+    return { isEdit, src, form, errors, submitted, confirming, recordCount, cancelHref, save, remove,
+             ROAST_GROUPS, PROCESSES, levelsOf };
+  },
+  template: `
+    <template v-if="!isEdit || src">
+      <header class="topbar"><h1>{{ isEdit ? '豆を編集' : '豆を登録' }}</h1></header>
+      <form class="card form" novalidate @submit.prevent="save">
+        <label class="field" :class="{ 'has-error': errors.name }"><span>豆の名前<em class="req">*</em></span>
+          <input type="text" v-model="form.name" placeholder="例: エチオピア イルガチェフェ">
+          <small v-if="errors.name" class="err">{{ errors.name }}</small>
+        </label>
+        <label class="field" :class="{ 'has-error': errors.shop }"><span>購入店</span>
+          <input type="text" v-model="form.shop" placeholder="例: 〇〇珈琲店">
+          <small v-if="errors.shop" class="err">{{ errors.shop }}</small>
+        </label>
+        <label class="field" :class="{ 'has-error': errors.origin }"><span>産地</span>
+          <input type="text" v-model="form.origin" placeholder="例: エチオピア イルガチェフェ">
+          <small v-if="errors.origin" class="err">{{ errors.origin }}</small>
+        </label>
+        <label class="field"><span>焙煎度</span>
+          <select v-model="form.roast">
+            <option value="">選択しない</option>
+            <optgroup v-for="g in ROAST_GROUPS" :key="g.value" :label="g.label">
+              <option :value="'g:' + g.value">{{ g.label }}（細かい段階は不明）</option>
+              <option v-for="l in levelsOf(g.value)" :key="l.value" :value="'l:' + l.value">{{ l.label }}（{{ g.label }}）</option>
+            </optgroup>
+          </select>
+        </label>
+        <label class="field"><span>精製方法</span>
+          <select v-model="form.process">
+            <option value="">分からない・選択しない</option>
+            <option v-for="p in PROCESSES" :key="p.value" :value="p.value">{{ p.label }}</option>
+          </select>
+        </label>
+        <label class="field"><span>購入日</span>
+          <input type="date" v-model="form.purchased_on">
+        </label>
+        <div class="two">
+          <label class="field" :class="{ 'has-error': errors.weight_g }"><span>内容量（g）</span>
+            <input type="number" inputmode="numeric" v-model="form.weight_g" placeholder="200">
+            <small v-if="errors.weight_g" class="err">{{ errors.weight_g }}</small>
+          </label>
+          <label class="field" :class="{ 'has-error': errors.price }"><span>価格（円）</span>
+            <input type="number" inputmode="numeric" v-model="form.price" placeholder="1500">
+            <small v-if="errors.price" class="err">{{ errors.price }}</small>
+          </label>
+        </div>
+        <div class="field"><span>評価</span>
+          <star-rating v-model="form.rating"></star-rating>
+        </div>
+        <label class="field" :class="{ 'has-error': errors.memo }"><span>メモ</span>
+          <textarea v-model="form.memo" placeholder="例: 店員さんのおすすめ"></textarea>
+          <small v-if="errors.memo" class="err">{{ errors.memo }}</small>
+        </label>
+
+        <p v-if="submitted && Object.keys(errors).length" class="form-error">入力内容に誤りがあります。赤字の項目を確認してください。</p>
+        <div class="actions">
+          <button v-if="isEdit" type="button" class="btn danger" @click="confirming = true">削除</button>
+          <span class="spacer"></span>
+          <a class="btn" :href="cancelHref">キャンセル</a>
+          <button type="submit" class="btn primary">保存</button>
+        </div>
+      </form>
+      <confirm-dialog v-if="confirming" title="この豆を削除しますか？"
+        :message="'抽出記録（' + recordCount + '件）も一緒に削除されます。'"
+        @cancel="confirming = false" @ok="remove"></confirm-dialog>
+    </template>
+    <template v-else>
+      <header class="topbar"><a class="link" href="#/">← 一覧へ</a></header>
+      <p class="empty">豆が見つかりません</p>
+    </template>`,
+};
+
+// ===== S-4 抽出記録フォーム画面 =====
+const RecordForm = {
+  props: ['beanId', 'recordId'],
+  components: { ConfirmDialog },
+  setup(props) {
+    const bean = findBean(props.beanId);
+    const isEdit = props.recordId != null;
+    const src = isEdit ? store.records.find(r => r.id === props.recordId && r.bean_id === props.beanId) : null;
+    const str = v => v == null ? '' : String(v);
+    const form = reactive({
+      brewed_on: src ? src.brewed_on : today(),
+      method: src ? src.method : '',
+      temperature: src ? src.temperature : 'hot',
+      dose_amount: src ? str(src.dose_amount) : '',
+      dose_unit: src && src.dose_unit ? src.dose_unit : 'g',
+      water_amount: src ? str(src.water_amount) : '',
+      water_unit: src && src.water_unit ? src.water_unit : 'ml',
+      taste_memo: src ? src.taste_memo || '' : '',
+      equipment: src ? src.equipment || '' : '',
+      grind_size: src ? src.grind_size || '' : '',
+      water_temp_c: src ? str(src.water_temp_c) : '',
+      brew_time_sec: src ? str(src.brew_time_sec) : '',
+    });
+    const hasDetail = !!src && !!(src.equipment || src.grind_size || src.water_temp_c != null || src.brew_time_sec != null);
+    const detailOpen = ref(hasDetail);
+    const errors = reactive({});
+    const submitted = ref(false);
+    const confirming = ref(false);
+    const backHref = '#/beans/' + props.beanId;
+
+    function save() {
+      submitted.value = true;
+      Object.keys(errors).forEach(k => delete errors[k]);
+      if (!form.brewed_on) errors.brewed_on = '抽出日を入力してください';
+      if (!form.method) errors.method = '抽出方法を選択してください';
+      if (!form.temperature) errors.temperature = 'ホットかアイスを選択してください';
+      const dose = form.dose_unit === 'g'
+        ? checkDecimal(errors, 'dose_amount', form.dose_amount, 0.1, 1000)
+        : checkDecimal(errors, 'dose_amount', form.dose_amount, 0.5, 20);
+      const water = form.water_unit === 'ml'
+        ? checkDecimal(errors, 'water_amount', form.water_amount, 1, 5000)
+        : checkDecimal(errors, 'water_amount', form.water_amount, 1, 20);
+      checkLength(errors, 'taste_memo', form.taste_memo, 1000);
+      checkLength(errors, 'equipment', form.equipment, 100);
+      const temp = checkInt(errors, 'water_temp_c', form.water_temp_c, 50, 100);
+      const time = checkInt(errors, 'brew_time_sec', form.brew_time_sec, 1, 3600);
+      if (errors.equipment || errors.water_temp_c || errors.brew_time_sec) detailOpen.value = true;
+      if (Object.keys(errors).length) return;
+
+      const data = {
+        brewed_on: form.brewed_on, method: form.method, temperature: form.temperature,
+        dose_amount: dose, dose_unit: dose == null ? null : form.dose_unit,
+        water_amount: water, water_unit: water == null ? null : form.water_unit,
+        taste_memo: form.taste_memo, equipment: form.equipment.trim(),
+        grind_size: form.grind_size || null, water_temp_c: temp, brew_time_sec: time,
+      };
+      if (isEdit) Object.assign(src, data);
+      else store.records.push({ id: nextId(), bean_id: props.beanId, created_at: Date.now(), ...data });
+      go(backHref);
+    }
+    function remove() {
+      store.records = store.records.filter(r => r.id !== props.recordId);
+      go(backHref);
+    }
+    return { bean, isEdit, src, form, detailOpen, errors, submitted, confirming, backHref, save, remove, METHODS, TEMPERATURES, GRINDS };
+  },
+  template: `
+    <template v-if="bean && (!isEdit || src)">
+      <header class="topbar"><h1>{{ isEdit ? '記録を編集' : '記録を追加' }}</h1></header>
+      <p class="sub">{{ bean.name }}</p>
+      <form class="card form" novalidate @submit.prevent="save">
+        <label class="field" :class="{ 'has-error': errors.brewed_on }"><span>抽出日<em class="req">*</em></span>
+          <input type="date" v-model="form.brewed_on">
+          <small v-if="errors.brewed_on" class="err">{{ errors.brewed_on }}</small>
+        </label>
+        <label class="field" :class="{ 'has-error': errors.method }"><span>抽出方法<em class="req">*</em></span>
+          <select v-model="form.method">
+            <option value="" disabled>選択してください</option>
+            <option v-for="m in METHODS" :key="m.value" :value="m.value">{{ m.label }}</option>
+          </select>
+          <small v-if="errors.method" class="err">{{ errors.method }}</small>
+        </label>
+        <div class="field" :class="{ 'has-error': errors.temperature }"><span>ホット / アイス<em class="req">*</em></span>
+          <div class="segmented" role="radiogroup" aria-label="ホット / アイス">
+            <label v-for="t in TEMPERATURES" :key="t.value" :class="{ on: form.temperature === t.value }">
+              <input type="radio" :value="t.value" v-model="form.temperature"> {{ t.label }}
+            </label>
+          </div>
+          <small v-if="errors.temperature" class="err">{{ errors.temperature }}</small>
+        </div>
+        <div class="two">
+          <div class="field" :class="{ 'has-error': errors.dose_amount }"><span>豆の量</span>
+            <div class="amount">
+              <input type="number" inputmode="decimal" step="0.1" v-model="form.dose_amount" :placeholder="form.dose_unit === 'g' ? '15' : '2'" aria-label="豆の量">
+              <select v-model="form.dose_unit" aria-label="豆の量の単位"><option value="g">g</option><option value="cup">杯</option></select>
+            </div>
+            <small v-if="errors.dose_amount" class="err">{{ errors.dose_amount }}</small>
+          </div>
+          <div class="field" :class="{ 'has-error': errors.water_amount }"><span>湯量</span>
+            <div class="amount">
+              <input type="number" inputmode="decimal" step="0.1" v-model="form.water_amount" :placeholder="form.water_unit === 'ml' ? '240' : '2'" aria-label="湯量">
+              <select v-model="form.water_unit" aria-label="湯量の単位"><option value="ml">ml</option><option value="cup">杯</option></select>
+            </div>
+            <small v-if="errors.water_amount" class="err">{{ errors.water_amount }}</small>
+          </div>
+        </div>
+        <label class="field" :class="{ 'has-error': errors.taste_memo }"><span>味のメモ</span>
+          <textarea v-model="form.taste_memo" placeholder="例: 酸味が明るく、後味がすっきり"></textarea>
+          <small v-if="errors.taste_memo" class="err">{{ errors.taste_memo }}</small>
+        </label>
+
+        <button type="button" class="toggle" :aria-expanded="detailOpen" @click="detailOpen = !detailOpen">
+          {{ detailOpen ? '▼' : '▶' }} 詳細（任意）
+        </button>
+        <div v-show="detailOpen" class="details-box">
+          <label class="field" :class="{ 'has-error': errors.equipment }"><span>器具・マシン名</span>
+            <input type="text" v-model="form.equipment" placeholder="例: ハリオ V60 / 〇〇社 全自動マシン">
+            <small v-if="errors.equipment" class="err">{{ errors.equipment }}</small>
+          </label>
+          <label class="field"><span>挽き目</span>
+            <select v-model="form.grind_size">
+              <option value="">選択しない</option>
+              <option v-for="g in GRINDS" :key="g.value" :value="g.value">{{ g.label }}</option>
+            </select>
+          </label>
+          <div class="two">
+            <label class="field" :class="{ 'has-error': errors.water_temp_c }"><span>湯温（℃）</span>
+              <input type="number" inputmode="numeric" v-model="form.water_temp_c" placeholder="90">
+              <small v-if="errors.water_temp_c" class="err">{{ errors.water_temp_c }}</small>
+            </label>
+            <label class="field" :class="{ 'has-error': errors.brew_time_sec }"><span>抽出時間（秒）</span>
+              <input type="number" inputmode="numeric" v-model="form.brew_time_sec" placeholder="180">
+              <small v-if="errors.brew_time_sec" class="err">{{ errors.brew_time_sec }}</small>
+            </label>
+          </div>
+        </div>
+
+        <p v-if="submitted && Object.keys(errors).length" class="form-error">入力内容に誤りがあります。赤字の項目を確認してください。</p>
+        <div class="actions">
+          <button v-if="isEdit" type="button" class="btn danger" @click="confirming = true">削除</button>
+          <span class="spacer"></span>
+          <a class="btn" :href="backHref">キャンセル</a>
+          <button type="submit" class="btn primary">保存</button>
+        </div>
+      </form>
+      <confirm-dialog v-if="confirming" title="この抽出記録を削除しますか？"
+        @cancel="confirming = false" @ok="remove"></confirm-dialog>
+    </template>
+    <template v-else>
+      <header class="topbar"><a class="link" href="#/">← 一覧へ</a></header>
+      <p class="empty">{{ bean ? '記録が見つかりません' : '豆が見つかりません' }}</p>
+    </template>`,
+};
+
+// ===== 画面の切り替え（ハッシュで簡易ルーティング） =====
+//   #/                               S-1 豆一覧
+//   #/beans/new                      S-3 豆フォーム（新規）
+//   #/beans/:id                      S-2 豆詳細
+//   #/beans/:id/edit                 S-3 豆フォーム（編集）
+//   #/beans/:id/records/new          S-4 抽出記録フォーム（新規）
+//   #/beans/:id/records/:rid/edit    S-4 抽出記録フォーム（編集）
+function resolve(hash) {
+  const path = hash.replace(/^#/, '') || '/';
+  let m;
+  if (path === '/beans/new') return { comp: BeanForm, props: { beanId: null } };
+  if ((m = path.match(/^\/beans\/(\d+)$/))) return { comp: BeanDetail, props: { beanId: +m[1] } };
+  if ((m = path.match(/^\/beans\/(\d+)\/edit$/))) return { comp: BeanForm, props: { beanId: +m[1] } };
+  if ((m = path.match(/^\/beans\/(\d+)\/records\/new$/))) return { comp: RecordForm, props: { beanId: +m[1], recordId: null } };
+  if ((m = path.match(/^\/beans\/(\d+)\/records\/(\d+)\/edit$/))) return { comp: RecordForm, props: { beanId: +m[1], recordId: +m[2] } };
+  return { comp: BeanList, props: {} };
+}
+
+createApp({
+  setup() {
+    const hash = ref(location.hash);
+    window.addEventListener('hashchange', () => { hash.value = location.hash; window.scrollTo(0, 0); });
+    const view = computed(() => resolve(hash.value));
+    const reset = empty => { resetData(empty); location.hash = '#/'; };
+    return { hash, view, reset };
+  },
+  template: `
+    <div class="mock-banner">
+      <span>画面モック：データは保存されません（リロードで初期データに戻ります）</span>
+      <button type="button" @click="reset(true)">データを空にする</button>
+      <button type="button" @click="reset(false)">初期データに戻す</button>
+    </div>
+    <main class="container">
+      <component :is="view.comp" v-bind="view.props" :key="hash"></component>
+    </main>`,
+}).mount('#app');
+</script>
+</body>
+</html>
