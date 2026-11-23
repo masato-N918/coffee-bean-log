@@ -110,12 +110,20 @@ const rows = computed<[string, string][]>(() => {
 
     <div class="section-head">
       <h3>抽出記録（{{ records.length }}件）</h3>
-      <!-- TODO: 抽出記録フォーム画面（S-4）ができたら RouterLink にする -->
-      <button class="btn primary" type="button" disabled>＋ 記録を追加</button>
+      <RouterLink
+        class="btn primary"
+        :to="{ name: 'brew-record-new', params: { beanId: bean.id } }"
+      >
+        ＋ 記録を追加
+      </RouterLink>
     </div>
     <p v-if="records.length === 0" class="empty">まだ記録がありません</p>
-    <!-- TODO: 抽出記録フォーム画面（S-4）ができたら RouterLink（編集モード）にする -->
-    <div v-for="r in records" :key="r.id" class="card record-card">
+    <RouterLink
+      v-for="r in records"
+      :key="r.id"
+      class="card record-card"
+      :to="{ name: 'brew-record-edit', params: { beanId: bean.id, recordId: r.id } }"
+    >
       <div>
         <strong>{{ r.brewed_on }}</strong
         >　{{ labelOf(BREW_METHODS, r.method) }}・<span :class="`temp-${r.temperature}`">{{
@@ -124,6 +132,6 @@ const rows = computed<[string, string][]>(() => {
       </div>
       <div v-if="amountText(r)" class="muted">{{ amountText(r) }}</div>
       <div v-if="r.taste_memo" class="memo">{{ r.taste_memo }}</div>
-    </div>
+    </RouterLink>
   </template>
 </template>

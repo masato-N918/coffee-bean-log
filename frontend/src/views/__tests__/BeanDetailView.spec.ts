@@ -197,6 +197,10 @@ describe('BeanDetailView', () => {
     expect(cards[1]!.text()).toContain('豆 2 杯 ／ 湯 2 杯')
     expect(cards[1]!.find('.memo').exists()).toBe(false)
 
+    // カードは抽出記録フォーム画面（編集）へのリンク
+    expect(cards[0]!.attributes('href')).toBe('/beans/1/records/2/edit')
+    expect(cards[1]!.attributes('href')).toBe('/beans/1/records/1/edit')
+
     expect(wrapper.find('.empty').exists()).toBe(false)
   })
 
@@ -206,6 +210,8 @@ describe('BeanDetailView', () => {
 
     expect(wrapper.find('.section-head h3').text()).toBe('抽出記録（0件）')
     expect(wrapper.find('.empty').text()).toBe('まだ記録がありません')
+    // ［＋ 記録を追加］は抽出記録フォーム画面（新規）へのリンク
+    expect(wrapper.find('.section-head a.btn').attributes('href')).toBe('/beans/1/records/new')
   })
 
   it('豆が見つからない（404）ときは「豆が見つかりません」と表示する', async () => {

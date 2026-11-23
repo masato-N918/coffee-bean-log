@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import BeanListView from '../views/BeanListView.vue'
 import BeanDetailView from '../views/BeanDetailView.vue'
 import BeanFormView from '../views/BeanFormView.vue'
+import BrewRecordFormView from '../views/BrewRecordFormView.vue'
 
 export const routes = [
   {
@@ -25,6 +26,18 @@ export const routes = [
     path: '/beans/:id/edit',
     name: 'bean-edit',
     component: BeanFormView,
+    props: true,
+  },
+  {
+    path: '/beans/:beanId/records/new',
+    name: 'brew-record-new',
+    component: BrewRecordFormView,
+    props: true,
+  },
+  {
+    path: '/beans/:beanId/records/:recordId/edit',
+    name: 'brew-record-edit',
+    component: BrewRecordFormView,
     props: true,
   },
 ]

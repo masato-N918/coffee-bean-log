@@ -28,3 +28,6 @@ export interface BrewRecord {
   created_at: string
   updated_at: string
 }
+
+/** 登録・編集で API に送る値（backend の BrewRecordCreate / BrewRecordUpdate） */
+export type BrewRecordInput = Omit<BrewRecord, 'id' | 'bean_id' | 'created_at' | 'updated_at'>
