@@ -15,6 +15,9 @@ RoastGroup = Literal[*ROAST_GROUPS]
 RoastLevel = Literal[*ROAST_LEVELS]
 Process = Literal[*PROCESSES]
 
+# 豆一覧の並び順（newest: 新しい順 / rating: 評価順）
+BeanSort = Literal["newest", "rating"]
+
 
 class BeanBase(BaseModel):
     """豆の入力項目（登録・編集で共通）。"""

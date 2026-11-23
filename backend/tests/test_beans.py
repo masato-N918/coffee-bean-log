@@ -62,6 +62,116 @@ def test_list_beans_newest_first(client: TestClient) -> None:
     assert ids.index(second["id"]) < ids.index(first["id"])
 
 
+def list_ids(client: TestClient, **params: Any) -> list[int]:
+    response = client.get("/api/beans", params=params)
+    assert response.status_code == 200, response.text
+    return [bean["id"] for bean in response.json()]
+
+
+def test_filter_by_origin_partial_match(client: TestClient) -> None:
+    ethiopia = create_bean(client, origin="エチオピア イルガチェフェ")
+    kenya = create_bean(client, origin="ケニア")
+
+    ids = list_ids(client, origin="エチオピア")
+
+    assert ethiopia["id"] in ids
+    assert kenya["id"] not in ids
+
+
+def test_filter_by_origin_escapes_wildcards(client: TestClient) -> None:
+    bean = create_bean(client, origin="ブラジル")
+
+    assert bean["id"] not in list_ids(client, origin="%")
+    assert bean["id"] in list_ids(client, origin="")  # 空なら条件なし
+
+
+def test_filter_by_roast_group_includes_roast_level(client: TestClient) -> None:
+    high = create_bean(client, roast_level="high")
+    group_only = create_bean(client, roast_group="medium")
+    city = create_bean(client, roast_level="city")
+
+    ids = list_ids(client, roast_group="medium")
+
+    assert high["id"] in ids
+    assert group_only["id"] in ids
+    assert city["id"] not in ids
+
+
+def test_filter_by_roast_level_exact(client: TestClient) -> None:
+    high = create_bean(client, roast_level="high")
+    group_only = create_bean(client, roast_group="medium")
+
+    ids = list_ids(client, roast_level="high")
+
+    assert high["id"] in ids
+    assert group_only["id"] not in ids
+
+
+def test_filter_by_roast_group_and_level_is_or(client: TestClient) -> None:
+    light = create_bean(client, roast_group="light")
+    city = create_bean(client, roast_level="city")
+    french = create_bean(client, roast_level="french")
+
+    ids = list_ids(client, roast_group=["light"], roast_level=["city"])
+
+    assert light["id"] in ids
+    assert city["id"] in ids
+    assert french["id"] not in ids
+
+
+def test_filter_by_min_rating(client: TestClient) -> None:
+    beans = {rating: create_bean(client, rating=rating) for rating in (2, 3, 5)}
+    unrated = create_bean(client)
+
+    ids = list_ids(client, min_rating=3)
+
+    assert beans[3]["id"] in ids
+    assert beans[5]["id"] in ids
+    assert beans[2]["id"] not in ids
+    assert unrated["id"] not in ids
+
+
+def test_filters_are_combined_with_and(client: TestClient) -> None:
+    match = create_bean(client, origin="エチオピア", rating=4)
+    low_rating = create_bean(client, origin="エチオピア", rating=2)
+    other_origin = create_bean(client, origin="ケニア", rating=5)
+
+    ids = list_ids(client, origin="エチオピア", min_rating=3)
+
+    assert match["id"] in ids
+    assert low_rating["id"] not in ids
+    assert other_origin["id"] not in ids
+
+
+def test_sort_by_rating(client: TestClient) -> None:
+    unrated = create_bean(client)
+    old_four = create_bean(client, rating=4)
+    five = create_bean(client, rating=5)
+    new_four = create_bean(client, rating=4)
+    mine = {bean["id"] for bean in (unrated, old_four, five, new_four)}
+
+    ids = [bean_id for bean_id in list_ids(client, sort="rating") if bean_id in mine]
+
+    assert ids == [five["id"], new_four["id"], old_four["id"], unrated["id"]]
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"roast_group": "unknown"},
+        {"roast_level": "unknown"},
+        {"min_rating": 0},
+        {"min_rating": 6},
+        {"sort": "unknown"},
+        {"origin": "あ" * 101},
+    ],
+)
+def test_list_beans_invalid_params(client: TestClient, params: dict[str, Any]) -> None:
+    response = client.get("/api/beans", params=params)
+
+    assert response.status_code == 422
+
+
 def test_update_bean(client: TestClient) -> None:
     created = create_bean(client)
 
