@@ -67,7 +67,7 @@ uv run fastapi dev app/main.py
 | メソッド | パス | 内容 | 成功時 |
 |------|------|------|------|
 | GET | `/api/health` | ヘルスチェック | 200 |
-| GET | `/api/beans` | 豆の一覧（新しい順） | 200 |
+| GET | `/api/beans` | 豆の一覧（絞り込み・並び替えはクエリパラメータで指定） | 200 |
 | POST | `/api/beans` | 豆の登録 | 201 |
 | GET | `/api/beans/{id}` | 豆の詳細 | 200 |
 | PUT | `/api/beans/{id}` | 豆の編集（全項目を送る） | 200 |
@@ -75,6 +75,18 @@ uv run fastapi dev app/main.py
 
 - 入力チェックに合わない値は 422、存在しない id は 404 を返す。
 - 焙煎度は、`roast_level`（8段階）だけ送ると `roast_group`（呼び方）が自動で入る。組み合わせが食い違うと 422。
+
+### 豆一覧のクエリパラメータ
+
+| パラメータ | 内容 | 例 |
+|------|------|------|
+| `origin` | 産地の部分一致（100文字以内） | `origin=エチオピア` |
+| `roast_group` | 焙煎度の呼び方。複数指定可。8段階で登録した豆も対象 | `roast_group=light&roast_group=medium` |
+| `roast_level` | 焙煎度 8段階。複数指定可。その段階で登録した豆だけ | `roast_level=city` |
+| `min_rating` | 評価がこの値以上（1〜5）。未評価の豆は出ない | `min_rating=3` |
+| `sort` | `newest`（新しい順・初期値）/ `rating`（評価の高い順。同じ評価は新しい順、未評価は最後） | `sort=rating` |
+
+- 条件同士は AND。`roast_group` と `roast_level` を両方指定したときは、どちらかに当てはまる豆を返す（OR）。
 
 ## テスト・コードチェック
 
