@@ -9,6 +9,7 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models.choices import PROCESSES, ROAST_GROUPS, ROAST_LEVEL_TO_GROUP, ROAST_LEVELS
+from app.schemas.common import INPUT_CONFIG, Text100, Text1000
 
 # 選択肢は choices.py のタプルから作る（値を二重に書かない）
 RoastGroup = Literal[*ROAST_GROUPS]
@@ -22,9 +23,11 @@ BeanSort = Literal["newest", "rating"]
 class BeanBase(BaseModel):
     """豆の入力項目（登録・編集で共通）。"""
 
+    model_config = INPUT_CONFIG
+
     name: str = Field(min_length=1, max_length=100)
-    shop: str | None = Field(default=None, max_length=100)
-    origin: str | None = Field(default=None, max_length=100)
+    shop: Text100 = None
+    origin: Text100 = None
     roast_group: RoastGroup | None = None
     roast_level: RoastLevel | None = None
     process: Process | None = None
@@ -32,7 +35,7 @@ class BeanBase(BaseModel):
     weight_g: int | None = Field(default=None, ge=1, le=10000)
     price: int | None = Field(default=None, ge=0, le=1000000)
     rating: int | None = Field(default=None, ge=1, le=5)
-    memo: str | None = Field(default=None, max_length=1000)
+    memo: Text1000 = None
 
     @model_validator(mode="after")
     def fill_and_check_roast_group(self) -> Self:

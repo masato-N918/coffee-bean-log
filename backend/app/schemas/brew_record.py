@@ -10,6 +10,7 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
 from app.models.choices import BREW_METHODS, DOSE_UNITS, GRIND_SIZES, TEMPERATURES, WATER_UNITS
+from app.schemas.common import INPUT_CONFIG, Text100, Text1000
 
 # 選択肢は choices.py のタプルから作る（値を二重に書かない）
 BrewMethod = Literal[*BREW_METHODS]
@@ -55,6 +56,8 @@ def check_amount(
 class BrewRecordBase(BaseModel):
     """抽出記録の入力項目（登録・編集で共通）。"""
 
+    model_config = INPUT_CONFIG
+
     brewed_on: date
     method: BrewMethod
     temperature: Temperature = "hot"
@@ -62,11 +65,11 @@ class BrewRecordBase(BaseModel):
     dose_unit: DoseUnit | None = None
     water_amount: Amount | None = None
     water_unit: WaterUnit | None = None
-    equipment: str | None = Field(default=None, max_length=100)
+    equipment: Text100 = None
     grind_size: GrindSize | None = None
     water_temp_c: int | None = Field(default=None, ge=50, le=100)
     brew_time_sec: int | None = Field(default=None, ge=1, le=3600)
-    taste_memo: str | None = Field(default=None, max_length=1000)
+    taste_memo: Text1000 = None
 
     @model_validator(mode="after")
     def check_amounts(self) -> Self:
