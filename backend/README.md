@@ -4,7 +4,7 @@ Python + FastAPI で作るバックエンド API です。パッケージ管理�
 
 ## 必要なもの
 
-- uv（Python 3.13 は uv が用意します）
+- uv（Python 3.14 は uv が用意します）
 
 ## セットアップ
 

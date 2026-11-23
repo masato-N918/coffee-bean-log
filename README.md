@@ -4,15 +4,17 @@
 
 > スクールの学習課題として開発しています。一度に作り込まず、1ステップずつ段階的に進めています。
 
-## 技術スタック（予定）
+## 技術スタック
 
 | 区分 | 技術 |
 |------|------|
-| フロントエンド | Vue 3 + TypeScript |
-| バックエンド | Python + FastAPI（uv） |
-| データベース | MySQL（本番は RDS for MySQL） |
+| フロントエンド | Vue 3.5 + TypeScript 6.0（Node.js 26 LTS / Vite 8） |
+| バックエンド | Python 3.14 + FastAPI 0.165（uv） |
+| データベース | MySQL 8.4 LTS（本番は RDS for MySQL） |
 | 本番環境 | AWS（EC2 + RDS） |
-| インフラ構築 | Terraform |
+| インフラ構築 | Terraform 1.17 |
+
+バージョンの選定理由は [要件定義書](docs/要件定義書.md#61-バージョン) を参照してください。
 
 ## 開発環境での起動
 
