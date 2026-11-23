@@ -78,7 +78,54 @@ a.card:hover {
   padding: 32px 0;
 }
 
+/* ===== 入力欄 ===== */
+.field {
+  display: block;
+}
+.field > span {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+input[type='text'],
+select {
+  width: 100%;
+  font: inherit;
+  padding: 8px 10px;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+}
+input:focus,
+select:focus,
+summary:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
 /* ===== 豆一覧 ===== */
+.filters .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.filters .row > * {
+  flex: 1 1 200px;
+}
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sort label {
+  margin-left: 10px;
+  white-space: nowrap;
+}
 .count {
   margin: 4px 0 8px;
   color: var(--muted);
@@ -92,6 +139,64 @@ a.card:hover {
 }
 .bean-card .line1 strong {
   font-size: 17px;
+}
+
+/* 焙煎度の複数選択 */
+.multi {
+  position: relative;
+}
+.multi summary {
+  list-style: none;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 32px 8px 10px;
+  background: #fff;
+  min-height: 42px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+}
+.multi summary::-webkit-details-marker {
+  display: none;
+}
+.multi summary::after {
+  content: '▼';
+  position: absolute;
+  right: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  top: 12px;
+}
+.multi-panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  max-height: 60vh;
+  overflow: auto;
+}
+.multi-group {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.multi-group:last-child {
+  border-bottom: 0;
+}
+.multi-group label {
+  display: block;
+  cursor: pointer;
+}
+.multi-group .lvl {
+  padding-left: 22px;
 }
 
 @media (max-width: 480px) {
