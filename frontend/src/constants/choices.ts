@@ -43,3 +43,8 @@ export function roastText(bean: Pick<Bean, 'roast_group' | 'roast_level'>): stri
   if (bean.roast_group) return labelOf(ROAST_GROUPS, bean.roast_group)
   return ''
 }
+
+/** 呼び方に属する8段階の一覧 */
+export function levelsOf(group: RoastGroup) {
+  return ROAST_LEVELS.filter((l) => l.group === group)
+}

@@ -23,3 +23,15 @@ export interface Bean {
   created_at: string
   updated_at: string
 }
+
+/** 豆一覧の並び順（newest: 新しい順 / rating: 評価順） */
+export type BeanSort = 'newest' | 'rating'
+
+/** 豆一覧 API（GET /api/beans）の絞り込み・並び替えの条件 */
+export interface BeanListQuery {
+  origin?: string
+  roast_group?: RoastGroup[]
+  roast_level?: RoastLevel[]
+  min_rating?: number
+  sort?: BeanSort
+}
